@@ -1,8 +1,5 @@
 package redis
 
-type Redis struct {
-}
-
 func Init(redisConfig RConfig) {
 	initRedis(redisConfig)
 }
