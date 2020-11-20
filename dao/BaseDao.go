@@ -89,6 +89,28 @@ func (dao *BaseDao) MarshalUpSql(v interface{}, table string) (string, []interfa
 	return result.ToString(), args
 }
 
-func (dao *BaseDao) findBy() {
+func (dao *BaseDao) MarshalFieldSql(v interface{}, table string) (string, []interface{}) {
+	result := common.NewStringBuilder()
+	result.Append("select ")
+	fields := common.NewStringBuilder()
+	values := common.NewStringBuilder()
+	var args []interface{}
+	args = marshalField(result, fields, values, v, args)
+	result.Append(" from ")
+	result.Append(table)
+	result.Append(" ")
+	return result.ToString(), args
+}
 
+func (dao *BaseDao) MarshalSelectByPrimarySql(v interface{}, table string) (string, []interface{}) {
+	result := common.NewStringBuilder()
+	result.Append("select ")
+	fields := common.NewStringBuilder()
+	values := common.NewStringBuilder()
+	var args []interface{}
+	args = marshalField(result, fields, values, v, args)
+	result.Append(" from ")
+	result.Append(table)
+	result.Append("  where id = ? limit 1")
+	return result.ToString(), args
 }
