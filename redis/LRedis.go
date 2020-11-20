@@ -1,3 +1,9 @@
+/**
+ * @Title  redis操作包
+ * @Description redis操作的封装
+ * @Author YaoWeiXin
+ * @Update 2020/11/20 10:09.
+ */
 package redis
 
 func Init(redisConfig RConfig) {
@@ -30,7 +36,11 @@ func RGet(db string, key string) string {
 	conn := getConn(db)
 	rev, _ := conn.Do("get", key)
 	defer releaseConn(conn)
-	return string(rev.([]byte))
+	if rev == nil {
+		return ""
+	} else {
+		return string(rev.([]byte))
+	}
 }
 
 func RSet(db string, key string, value string) {

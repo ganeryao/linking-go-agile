@@ -1,3 +1,9 @@
+/**
+ * @Title  mysql操作层
+ * @Description mysql操作的封装
+ * @Author YaoWeiXin
+ * @Update 2020/11/20 10:08
+ */
 package mysql
 
 import (

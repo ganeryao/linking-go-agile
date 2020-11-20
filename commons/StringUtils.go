@@ -9,6 +9,10 @@ type StringBuilder struct {
 	buffer strings.Builder
 }
 
+func IsEmpty(str string) bool {
+	return len(str) == 0
+}
+
 func NewStringBuilder() *StringBuilder {
 	var builder StringBuilder
 	return &builder

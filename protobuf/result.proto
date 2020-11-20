@@ -1,0 +1,14 @@
+//指定版本
+//注意proto3与proto2的写法有些不同
+syntax = "proto3";
+//包名，通过protoc生成时go文件时
+package result;
+option go_package = "/models";
+
+//声明一个消息体描述一个请求或者响应的消息格式
+message LResult {
+  bool OK = 1;
+  string Code = 2;
+  string Msg = 3;
+  string Data = 4;
+}
