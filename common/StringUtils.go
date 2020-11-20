@@ -13,6 +13,15 @@ func IsEmpty(str string) bool {
 	return len(str) == 0
 }
 
+func Int64ToStr(num int64) string {
+	return strconv.FormatInt(num, 10)
+}
+
+func StrToInt64(str string) int64 {
+	i, _ := strconv.ParseInt(str, 0, 64)
+	return i
+}
+
 func NewStringBuilder() *StringBuilder {
 	var builder StringBuilder
 	return &builder

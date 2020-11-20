@@ -5,7 +5,6 @@ syntax = "proto3";
 package result;
 option go_package = "/model";
 
-//声明一个消息体描述一个请求或者响应的消息格式
 message LResult {
   bool OK = 1;
   string Code = 2;

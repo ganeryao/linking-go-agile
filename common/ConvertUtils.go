@@ -9,8 +9,21 @@ import (
 	"linking/linking-go-agile/model"
 )
 
+func ConvertJson(data interface{}) string {
+	jsonStr, _ := json.Marshal(data)
+	return string(jsonStr)
+}
+
+func ParseJson(str string, data interface{}) interface{} {
+	_ = json.Unmarshal([]byte(str), data)
+	return data
+}
+
 func ConvertDTO(ctx iris.Context, m proto.Message) {
 	var param = ctx.PostValue("param")
+	if len(param) == 0 {
+		_ = ctx.ReadBody(&param)
+	}
 	var dataType = SelfRuntime.GetProtocolType()
 	switch dataType {
 	case Protocol_PROTOBUF.String():
