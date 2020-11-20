@@ -9,7 +9,7 @@
 
 //包名，通过protoc生成时go文件时
 
-package models
+package model
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"

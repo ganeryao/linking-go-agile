@@ -4,7 +4,7 @@
  * @Author YaoWeiXin
  * @Update 2020/11/20 10:07
  */
-package commons
+package common
 
 type ProtocolType string
 

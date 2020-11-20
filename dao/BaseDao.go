@@ -7,7 +7,7 @@
 package dao
 
 import (
-	"linking/linking-go-agile/commons"
+	"linking/linking-go-agile/common"
 	"reflect"
 	"strings"
 )
@@ -15,8 +15,8 @@ import (
 type BaseDao struct {
 }
 
-func marshalField(result *commons.StringBuilder, fList *commons.StringBuilder,
-	vList *commons.StringBuilder, obj interface{}, args []interface{}) []interface{} {
+func marshalField(result *common.StringBuilder, fList *common.StringBuilder,
+	vList *common.StringBuilder, obj interface{}, args []interface{}) []interface{} {
 	objType := reflect.TypeOf(obj)
 	var types reflect.Type
 	var values reflect.Value
@@ -73,12 +73,12 @@ fieldFor:
 }
 
 func (dao *BaseDao) MarshalUpSql(v interface{}, table string) (string, []interface{}) {
-	result := commons.NewStringBuilder()
+	result := common.NewStringBuilder()
 	result.Append("INSERT INTO ")
 	result.Append(table)
 	result.Append("(")
-	fields := commons.NewStringBuilder()
-	values := commons.NewStringBuilder()
+	fields := common.NewStringBuilder()
+	values := common.NewStringBuilder()
 	var args []interface{}
 	args = marshalField(result, fields, values, v, args)
 	result.Append(") VALUES(")

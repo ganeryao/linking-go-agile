@@ -1,4 +1,4 @@
-package commons
+package common
 
 import (
 	"linking/linking-go-agile/redis"

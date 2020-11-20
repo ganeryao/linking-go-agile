@@ -1,21 +1,27 @@
-package commons
+package common
 
 import (
 	"encoding/base64"
 	"encoding/json"
 	"github.com/alecthomas/log4go"
 	"github.com/golang/protobuf/proto"
-	"linking/linking-go-agile/models"
+	"github.com/kataras/iris"
+	"linking/linking-go-agile/model"
 )
 
-type LResult struct {
-	OK   bool
-	Code string
-	Msg  string
-	Data interface{} `json:"Data,omitempty"`
+func ConvertDTO(ctx iris.Context, m proto.Message) {
+	var param = ctx.PostValue("param")
+	var dataType = SelfRuntime.GetProtocolType()
+	switch dataType {
+	case Protocol_PROTOBUF.String():
+		var data, _ = base64.StdEncoding.DecodeString(param)
+		_ = proto.Unmarshal(data, m)
+	case Protocol_JSON.String():
+		_ = json.Unmarshal([]byte(param), m)
+	}
 }
 
-func ConvertResult(result *models.LResult) string {
+func ConvertResult(result *model.LResult) string {
 	var dataType = SelfRuntime.GetProtocolType()
 	switch dataType {
 	case Protocol_PROTOBUF.String():
@@ -29,7 +35,7 @@ func ConvertResult(result *models.LResult) string {
 	}
 }
 
-func convertJsonResult(result *models.LResult) LResult {
+func convertJsonResult(result *model.LResult) LResult {
 	var sResult LResult
 	sResult.OK = result.OK
 	sResult.Code = result.Code
@@ -47,25 +53,4 @@ func convertJsonResult(result *models.LResult) LResult {
 		}
 	}
 	return sResult
-}
-
-func TestFail(lResult *models.LResult) bool {
-	return !lResult.OK
-}
-
-func OfResult() models.LResult {
-	return models.LResult{OK: true, Code: "0", Msg: ""}
-}
-
-func OfResultData(data interface{}) models.LResult {
-	if data == nil {
-		return models.LResult{OK: true, Code: "0", Msg: ""}
-	} else {
-		jsonB, _ := json.Marshal(data)
-		return models.LResult{OK: true, Code: "0", Msg: "", Data: string(jsonB)}
-	}
-}
-
-func OfResultFail(code string, msg string) models.LResult {
-	return models.LResult{OK: false, Code: code, Msg: msg}
 }
