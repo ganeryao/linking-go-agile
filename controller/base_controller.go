@@ -6,5 +6,22 @@
  */
 package controller
 
+import (
+	"github.com/kataras/iris"
+	"linking/linking-go-agile/common"
+	"linking/linking-go-agile/model"
+	"linking/linking-go-agile/pojo"
+	"linking/linking-go-agile/pojo/dto"
+	"strings"
+)
+
 type BaseController struct {
+}
+
+func (c *BaseController) ConvertRequest(ctx iris.Context) *dto.ReqDTO {
+	var lRequest = &model.LRequest{}
+	common.ConvertRequest(ctx, lRequest)
+	arr := strings.Split(lRequest.Api, ".")
+	api := &pojo.ApiBO{Module: arr[len(arr)-2], Name: arr[len(arr)-1]}
+	return &dto.ReqDTO{Request: lRequest, Api: api}
 }

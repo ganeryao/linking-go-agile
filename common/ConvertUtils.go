@@ -3,23 +3,28 @@ package common
 import (
 	"encoding/base64"
 	"encoding/json"
-	"github.com/alecthomas/log4go"
 	"github.com/golang/protobuf/proto"
 	"github.com/kataras/iris"
 	"linking/linking-go-agile/model"
 )
 
 func ConvertJson(data interface{}) string {
-	jsonStr, _ := json.Marshal(data)
+	jsonStr, err := json.Marshal(data)
+	if err != nil {
+		panic(`ConvertJson: ` + err.Error())
+	}
 	return string(jsonStr)
 }
 
 func ParseJson(str string, data interface{}) interface{} {
-	_ = json.Unmarshal([]byte(str), data)
+	err := json.Unmarshal([]byte(str), data)
+	if err != nil {
+		panic(`ParseJson: str(` + str + `): ` + err.Error())
+	}
 	return data
 }
 
-func ConvertDTO(ctx iris.Context, m proto.Message) {
+func ConvertRequest(ctx iris.Context, m proto.Message) {
 	var param = ctx.PostValue("param")
 	if len(param) == 0 {
 		_ = ctx.ReadBody(&param)
@@ -27,24 +32,39 @@ func ConvertDTO(ctx iris.Context, m proto.Message) {
 	var dataType = SelfRuntime.GetProtocolType()
 	switch dataType {
 	case Protocol_PROTOBUF.String():
-		var data, _ = base64.StdEncoding.DecodeString(param)
-		_ = proto.Unmarshal(data, m)
+		var data, err = base64.StdEncoding.DecodeString(param)
+		if err != nil {
+			panic(`ConvertRequest base64.StdEncoding.DecodeString: str(` + param + `): ` + err.Error())
+		}
+		err = proto.Unmarshal(data, m)
+		if err != nil {
+			panic(`ConvertRequest proto.Unmarshal: str(` + param + `): ` + err.Error())
+		}
 	case Protocol_JSON.String():
-		_ = json.Unmarshal([]byte(param), m)
+		err := json.Unmarshal([]byte(param), m)
+		if err != nil {
+			panic(`ConvertRequest json.Unmarshal: str(` + param + `): ` + err.Error())
+		}
 	}
 }
 
 func ConvertResult(result *model.LResult) string {
-	var dataType = SelfRuntime.GetProtocolType()
-	switch dataType {
+	var protocolType = SelfRuntime.GetProtocolType()
+	switch protocolType {
 	case Protocol_PROTOBUF.String():
-		data, _ := proto.Marshal(result)
+		data, err := proto.Marshal(result)
+		if err != nil {
+			panic(`ConvertResult proto.Marshal: ` + err.Error())
+		}
 		return base64.StdEncoding.EncodeToString(data)
 	case Protocol_JSON.String():
-		jsonStr, _ := json.Marshal(convertJsonResult(result))
+		jsonStr, err := json.Marshal(convertJsonResult(result))
+		if err != nil {
+			panic(`ConvertResult json.Marshal: ` + err.Error())
+		}
 		return string(jsonStr)
 	default:
-		return ""
+		panic(`ConvertResult protocolType in default: ` + protocolType)
 	}
 }
 
@@ -61,7 +81,7 @@ func convertJsonResult(result *model.LResult) LResult {
 			if err := json.Unmarshal(b, &obj); err == nil {
 				sResult.Data = obj
 			} else {
-				_ = log4go.Error("ConvertResult string 2 json error: ", err)
+				panic(`convertJsonResult string 2 json error: ` + err.Error())
 			}
 		}
 	}

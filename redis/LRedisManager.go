@@ -57,12 +57,12 @@ func initDb(config RServerConfig, maxIdle int, maxActive int, idleTimeout int) *
 		Dial: func() (redigo.Conn, error) {
 			c, err := redigo.Dial("tcp", config.Ip)
 			if err != nil {
-				return nil, err
+				panic(`redis initDb: tcp(` + config.Ip + `): ` + err.Error())
 			}
 			if config.Password != "" {
 				if _, err := c.Do("AUTH", config.Password); err != nil {
 					c.Close()
-					return nil, err
+					panic(`redis initDb: AUTH(` + config.Ip + `): ` + err.Error())
 				}
 			}
 			return c, err

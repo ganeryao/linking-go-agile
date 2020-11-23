@@ -1,7 +1,6 @@
 package mysql
 
 import (
-	"github.com/alecthomas/log4go"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 )
@@ -53,8 +52,7 @@ func initDb(config MServerConfig, maxIdle int, maxActive int) *sqlx.DB {
 	dsn := config.User + ":" + config.Password + "@" + config.Url
 	db, err := sqlx.Connect("mysql", dsn)
 	if err != nil {
-		_ = log4go.Error("connect DB failed, err:", err)
-		return nil
+		panic(`mysql initDb: db(` + config.Url + `): ` + err.Error())
 	}
 	db.SetMaxOpenConns(maxActive)
 	db.SetMaxIdleConns(maxIdle)
