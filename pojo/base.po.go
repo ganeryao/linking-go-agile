@@ -1,15 +1,13 @@
-/**
- * @Title  pojo包
- * @Description 存放结构体对象po vo等
- * @Author YaoWeiXin
- * @Update 2020/11/20 10:09
- */
 package pojo
 
 import (
 	"strconv"
 	"time"
 )
+
+type PO interface {
+	Initial()
+}
 
 type AbstractPO struct {
 	Id         int64  `db:"id,key"`
