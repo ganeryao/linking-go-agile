@@ -12,12 +12,10 @@ type LResult struct {
 	Data interface{} `json:"Data,omitempty"`
 }
 
+var ResultOk = &model.LResult{OK: true, Code: "0", Msg: ""}
+
 func TestFail(lResult *model.LResult) bool {
 	return !lResult.OK
-}
-
-func OfResult() *model.LResult {
-	return &model.LResult{OK: true, Code: "0", Msg: ""}
 }
 
 func OfResultData(data interface{}) *model.LResult {
