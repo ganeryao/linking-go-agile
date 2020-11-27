@@ -3,7 +3,7 @@
 syntax = "proto3";
 //包名，通过protoc生成时go文件时
 package common;
-option go_package = "/model";
+option go_package = "/protos";
 
 //声明一个消息体描述一个请求或者响应的消息格式
 message LRequest {

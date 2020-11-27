@@ -2,7 +2,7 @@ package common
 
 import (
 	"encoding/json"
-	"linking/linking-go-agile/model"
+	"linking/linking-go-agile/protos"
 )
 
 type LResult struct {
@@ -12,21 +12,21 @@ type LResult struct {
 	Data interface{} `json:"Data,omitempty"`
 }
 
-var ResultOk = &model.LResult{OK: true, Code: "0", Msg: ""}
+var ResultOk = &protos.LResult{OK: true, Code: "0", Msg: ""}
 
-func TestFail(lResult *model.LResult) bool {
+func TestFail(lResult *protos.LResult) bool {
 	return !lResult.OK
 }
 
-func OfResultData(data interface{}) *model.LResult {
+func OfResultData(data interface{}) *protos.LResult {
 	if data == nil {
-		return &model.LResult{OK: true, Code: "0", Msg: ""}
+		return &protos.LResult{OK: true, Code: "0", Msg: ""}
 	} else {
 		jsonB, _ := json.Marshal(data)
-		return &model.LResult{OK: true, Code: "0", Msg: "", Data: string(jsonB)}
+		return &protos.LResult{OK: true, Code: "0", Msg: "", Data: string(jsonB)}
 	}
 }
 
-func OfResultFail(code string, msg string) *model.LResult {
-	return &model.LResult{OK: false, Code: code, Msg: msg}
+func OfResultFail(code string, msg string) *protos.LResult {
+	return &protos.LResult{OK: false, Code: code, Msg: msg}
 }

@@ -1,8 +1,8 @@
 package service
 
-import "linking/linking-go-agile/model"
+import "linking/linking-go-agile/protos"
 
 type Handler interface {
-	TestFunc(req *model.LRequest) *model.LResult
-	DoFunc(req *model.LRequest) *model.LResult
+	TestFunc(req *protos.LRequest) *protos.LResult
+	DoFunc(req *protos.LRequest) *protos.LResult
 }

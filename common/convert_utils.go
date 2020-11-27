@@ -5,11 +5,34 @@ import (
 	"encoding/json"
 	"github.com/golang/protobuf/proto"
 	"github.com/kataras/iris"
-	"linking/linking-go-agile/model"
+	"linking/linking-go-agile/protos"
+	"linking/linking-go-agile/serialize"
+	lkJson "linking/linking-go-agile/serialize/json"
 )
 
+type ConvertUtils struct {
+	serializer serialize.Serializer
+}
+
+var (
+	convert = &ConvertUtils{
+		serializer: lkJson.NewSerializer(),
+	}
+)
+
+// SetSerializer customize application serializer, which automatically Marshal
+// and UnMarshal handler payload
+func SetSerializer(ser serialize.Serializer) {
+	convert.serializer = ser
+}
+
+// GetSerializer gets the app serializer
+func GetSerializer() serialize.Serializer {
+	return convert.serializer
+}
+
 func ConvertJson(data interface{}) string {
-	jsonStr, err := json.Marshal(data)
+	jsonStr, err := convert.serializer.Marshal(data)
 	if err != nil {
 		panic(`ConvertJson: ` + err.Error())
 	}
@@ -17,7 +40,7 @@ func ConvertJson(data interface{}) string {
 }
 
 func ParseJson(str string, data interface{}) interface{} {
-	err := json.Unmarshal([]byte(str), data)
+	err := convert.serializer.Unmarshal([]byte(str), data)
 	if err != nil {
 		panic(`ParseJson: str(` + str + `): ` + err.Error())
 	}
@@ -29,46 +52,48 @@ func ConvertRequest(ctx iris.Context, m proto.Message) {
 	if len(param) == 0 {
 		_ = ctx.ReadBody(&param)
 	}
-	var dataType = SelfRuntime.GetProtocolType()
-	switch dataType {
-	case Protocol_PROTOBUF.String():
-		var data, err = base64.StdEncoding.DecodeString(param)
-		if err != nil {
-			panic(`ConvertRequest base64.StdEncoding.DecodeString: str(` + param + `): ` + err.Error())
-		}
-		err = proto.Unmarshal(data, m)
-		if err != nil {
-			panic(`ConvertRequest proto.Unmarshal: str(` + param + `): ` + err.Error())
-		}
-	case Protocol_JSON.String():
-		err := json.Unmarshal([]byte(param), m)
-		if err != nil {
-			panic(`ConvertRequest json.Unmarshal: str(` + param + `): ` + err.Error())
-		}
-	}
-}
-
-func ConvertResult(result *model.LResult) string {
-	var protocolType = SelfRuntime.GetProtocolType()
-	switch protocolType {
-	case Protocol_PROTOBUF.String():
-		data, err := proto.Marshal(result)
-		if err != nil {
-			panic(`ConvertResult proto.Marshal: ` + err.Error())
-		}
-		return base64.StdEncoding.EncodeToString(data)
-	case Protocol_JSON.String():
-		jsonStr, err := json.Marshal(convertJsonResult(result))
-		if err != nil {
-			panic(`ConvertResult json.Marshal: ` + err.Error())
-		}
-		return string(jsonStr)
+	serializerName := convert.serializer.GetName()
+	var b []byte
+	var err error
+	switch serializerName {
+	case "protos":
+		b, err = base64.StdEncoding.DecodeString(param)
+	case "json":
+		b = []byte(param)
 	default:
-		panic(`ConvertResult protocolType in default: ` + protocolType)
+		panic(`ConvertRequest type error: type(` + serializerName + `): `)
+	}
+	if err != nil {
+		panic(`ConvertRequest Decode: str(` + param + `): ` + err.Error())
+	}
+	err = convert.serializer.Unmarshal(b, m)
+	if err != nil {
+		panic(`ConvertRequest Unmarshal error: str(` + param + `): ` + err.Error())
 	}
 }
 
-func convertJsonResult(result *model.LResult) LResult {
+func ConvertResult(result *protos.LResult) string {
+	serializerName := convert.serializer.GetName()
+	var b []byte
+	var err error
+	var data string
+	switch serializerName {
+	case "protos":
+		b, err = convert.serializer.Marshal(result)
+		data = base64.StdEncoding.EncodeToString(b)
+	case "json":
+		b, err = convert.serializer.Marshal(convertJsonResult(result))
+		data = string(b)
+	default:
+		panic(`ConvertRequest type error: type(` + serializerName + `): `)
+	}
+	if err != nil {
+		panic(`ConvertResult Marshal error: ` + err.Error())
+	}
+	return data
+}
+
+func convertJsonResult(result *protos.LResult) LResult {
 	var sResult LResult
 	sResult.OK = result.OK
 	sResult.Code = result.Code
