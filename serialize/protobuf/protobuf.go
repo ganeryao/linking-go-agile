@@ -21,8 +21,8 @@
 package protobuf
 
 import (
+	"github.com/ganeryao/linking-go-agile/constants"
 	"github.com/golang/protobuf/proto"
-	"linking/linking-go-agile/constants"
 )
 
 // Serializer implements the serialize.Serializer interface

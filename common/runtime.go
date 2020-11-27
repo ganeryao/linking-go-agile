@@ -1,7 +1,7 @@
 package common
 
 import (
-	"linking/linking-go-agile/redis"
+	"github.com/ganeryao/linking-go-agile/redis"
 )
 
 type Runtimes struct {

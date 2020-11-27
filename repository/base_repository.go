@@ -7,9 +7,9 @@
 package repository
 
 import (
-	"linking/linking-go-agile/common"
-	"linking/linking-go-agile/mysql"
-	"linking/linking-go-agile/redis"
+	"github.com/ganeryao/linking-go-agile/common"
+	"github.com/ganeryao/linking-go-agile/mysql"
+	"github.com/ganeryao/linking-go-agile/redis"
 )
 
 type BaseRepository struct {

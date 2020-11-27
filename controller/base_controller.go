@@ -7,11 +7,11 @@
 package controller
 
 import (
+	"github.com/ganeryao/linking-go-agile/common"
+	"github.com/ganeryao/linking-go-agile/pojo"
+	"github.com/ganeryao/linking-go-agile/pojo/dto"
+	"github.com/ganeryao/linking-go-agile/protos"
 	"github.com/kataras/iris"
-	"linking/linking-go-agile/common"
-	"linking/linking-go-agile/pojo"
-	"linking/linking-go-agile/pojo/dto"
-	"linking/linking-go-agile/protos"
 	"strings"
 )
 

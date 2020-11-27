@@ -7,7 +7,7 @@
 package dao
 
 import (
-	"linking/linking-go-agile/common"
+	"github.com/ganeryao/linking-go-agile/common"
 	"reflect"
 	"strings"
 )

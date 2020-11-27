@@ -1,8 +1,8 @@
 package dto
 
 import (
-	"linking/linking-go-agile/pojo"
-	"linking/linking-go-agile/protos"
+	"github.com/ganeryao/linking-go-agile/pojo"
+	"github.com/ganeryao/linking-go-agile/protos"
 )
 
 type ReqDTO struct {
