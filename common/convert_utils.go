@@ -7,7 +7,6 @@ import (
 	"github.com/ganeryao/linking-go-agile/serialize"
 	lkJson "github.com/ganeryao/linking-go-agile/serialize/json"
 	"github.com/golang/protobuf/proto"
-	"github.com/kataras/iris"
 )
 
 type ConvertUtils struct {
@@ -47,11 +46,7 @@ func ParseJson(str string, data interface{}) interface{} {
 	return data
 }
 
-func ConvertRequest(ctx iris.Context, m proto.Message) {
-	var param = ctx.PostValue("param")
-	if len(param) == 0 {
-		_ = ctx.ReadBody(&param)
-	}
+func ConvertRequest(param string, m proto.Message) {
 	serializerName := convert.serializer.GetName()
 	var b []byte
 	var err error
