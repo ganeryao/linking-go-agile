@@ -12,8 +12,8 @@ message LRequest {
 }
 
 message LResult {
-  bool OK = 1;
-  string Code = 2;
-  string Msg = 3;
-  string Data = 4;
+  bool ok = 1;
+  string code = 2;
+  string msg = 3;
+  string data = 4;
 }
