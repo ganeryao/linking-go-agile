@@ -31,7 +31,7 @@ func GetSerializer() serialize.Serializer {
 }
 
 func ConvertJson(data interface{}) string {
-	jsonStr, err := convert.serializer.Marshal(data)
+	jsonStr, err := json.Marshal(data)
 	if err != nil {
 		panic(`ConvertJson: ` + err.Error())
 	}
@@ -39,7 +39,7 @@ func ConvertJson(data interface{}) string {
 }
 
 func ParseJson(str string, data interface{}) interface{} {
-	err := convert.serializer.Unmarshal([]byte(str), data)
+	err := json.Unmarshal([]byte(str), data)
 	if err != nil {
 		panic(`ParseJson: str(` + str + `): ` + err.Error())
 	}
