@@ -6,10 +6,10 @@ import (
 )
 
 type LResult struct {
-	OK   bool
-	Code string
-	Msg  string
-	Data interface{} `json:"Data,omitempty"`
+	Ok   bool        `json:"ok,omitempty"`
+	Code string      `json:"code,omitempty"`
+	Msg  string      `json:"msg,omitempty"`
+	Data interface{} `json:"data,omitempty"`
 }
 
 var ResultOk = &protos.LResult{Ok: true, Code: "0", Msg: ""}
