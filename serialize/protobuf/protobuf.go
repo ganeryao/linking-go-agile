@@ -21,7 +21,7 @@
 package protobuf
 
 import (
-	"github.com/ganeryao/linking-go-agile/constants"
+	"github.com/ganeryao/linking-go-agile/errors"
 	"github.com/golang/protobuf/proto"
 )
 
@@ -37,7 +37,7 @@ func NewSerializer() *Serializer {
 func (s *Serializer) Marshal(v interface{}) ([]byte, error) {
 	pb, ok := v.(proto.Message)
 	if !ok {
-		return nil, constants.ErrWrongValueType
+		return nil, errors.ErrWrongValueType
 	}
 	return proto.Marshal(pb)
 }
@@ -47,7 +47,7 @@ func (s *Serializer) Marshal(v interface{}) ([]byte, error) {
 func (s *Serializer) Unmarshal(data []byte, v interface{}) error {
 	pb, ok := v.(proto.Message)
 	if !ok {
-		return constants.ErrWrongValueType
+		return errors.ErrWrongValueType
 	}
 	return proto.Unmarshal(data, pb)
 }

@@ -3,6 +3,7 @@ package common
 import (
 	"encoding/base64"
 	"encoding/json"
+	"github.com/ganeryao/linking-go-agile/errors"
 	"github.com/ganeryao/linking-go-agile/protos"
 	"github.com/ganeryao/linking-go-agile/serialize"
 	lkJson "github.com/ganeryao/linking-go-agile/serialize/json"
@@ -30,23 +31,23 @@ func GetSerializer() serialize.Serializer {
 	return convert.serializer
 }
 
-func ConvertJson(data interface{}) string {
+func ConvertJson(data interface{}) (string, *errors.Error) {
 	jsonStr, err := json.Marshal(data)
 	if err != nil {
-		panic(`ConvertJson: ` + err.Error())
+		return "", errors.NewError(err, errors.ErrInternalCode)
 	}
-	return string(jsonStr)
+	return string(jsonStr), nil
 }
 
-func ParseJson(str string, data interface{}) interface{} {
+func ParseJson(str string, data interface{}) (interface{}, *errors.Error) {
 	err := json.Unmarshal([]byte(str), data)
 	if err != nil {
-		panic(`ParseJson: str(` + str + `): ` + err.Error())
+		return "", errors.NewError(err, errors.ErrInternalCode)
 	}
-	return data
+	return data, nil
 }
 
-func ConvertRequest(param string, m proto.Message) {
+func ConvertRequest(param string, m proto.Message) *errors.Error {
 	serializerName := convert.serializer.GetName()
 	var b []byte
 	var err error
@@ -56,18 +57,19 @@ func ConvertRequest(param string, m proto.Message) {
 	case "json":
 		b = []byte(param)
 	default:
-		panic(`ConvertRequest type error: type(` + serializerName + `): `)
+		return errors.NewError(errors.ErrWrongSerializer, errors.ErrInternalCode)
 	}
 	if err != nil {
-		panic(`ConvertRequest Decode: str(` + param + `): ` + err.Error())
+		return errors.NewError(err, errors.ErrBadRequestCode)
 	}
 	err = convert.serializer.Unmarshal(b, m)
 	if err != nil {
-		panic(`ConvertRequest Unmarshal error: str(` + param + `): ` + err.Error())
+		return errors.NewError(err, errors.ErrBadRequestCode)
 	}
+	return nil
 }
 
-func ConvertResult(result *protos.LResult) string {
+func ConvertResult(result *protos.LResult) (string, *errors.Error) {
 	serializerName := convert.serializer.GetName()
 	var b []byte
 	var err error
@@ -83,9 +85,9 @@ func ConvertResult(result *protos.LResult) string {
 		panic(`ConvertRequest type error: type(` + serializerName + `): `)
 	}
 	if err != nil {
-		panic(`ConvertResult Marshal error: ` + err.Error())
+		return "", errors.NewError(err, errors.ErrBadRequestCode)
 	}
-	return data
+	return data, nil
 }
 
 func convertJsonResult(result *protos.LResult) LResult {
