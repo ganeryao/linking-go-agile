@@ -8,7 +8,6 @@ package repository
 
 import (
 	"github.com/ganeryao/linking-go-agile/common"
-	"github.com/ganeryao/linking-go-agile/errors"
 	"github.com/ganeryao/linking-go-agile/mysql"
 	"github.com/ganeryao/linking-go-agile/redis"
 )
@@ -16,21 +15,14 @@ import (
 type BaseRepository struct {
 }
 
-func GetAlways(db string, table string, dest interface{}, sql string, id int64) (interface{}, *errors.Error) {
+func GetAlways(db string, table string, dest interface{}, sql string, id int64) interface{} {
 	var key = "cache:" + table + ":" + common.Int64ToStr(id)
 	var str = redis.RGet(db, key)
 	if common.IsEmpty(str) {
 		mysql.MFindOne(db, dest, sql, id)
-		str, err := common.ConvertJson(dest)
-		if err != nil {
-			return nil, err
-		}
-		redis.RSet(db, key, str)
+		redis.RSet(db, key, common.ConvertJson(dest))
 	} else {
-		_, err := common.ParseJson(str, dest)
-		if err != nil {
-			return nil, err
-		}
+		common.ParseJson(str, dest)
 	}
-	return dest, nil
+	return dest
 }
