@@ -6,27 +6,26 @@ import (
 )
 
 type LResult struct {
+	Api  string      `json:"api,omitempty"`
 	Ok   bool        `json:"ok,omitempty"`
 	Code string      `json:"code,omitempty"`
 	Msg  string      `json:"msg,omitempty"`
 	Data interface{} `json:"data,omitempty"`
 }
 
-var ResultOk = &protos.LResult{Ok: true, Code: "0", Msg: ""}
-
 func TestFail(lResult *protos.LResult) bool {
 	return !lResult.Ok
 }
 
-func OfResultData(data interface{}) *protos.LResult {
+func OfResultData(api string, data interface{}) *protos.LResult {
 	if data == nil {
-		return &protos.LResult{Ok: true, Code: "0", Msg: ""}
+		return &protos.LResult{Api: api, Ok: true, Code: "0", Msg: ""}
 	} else {
 		jsonB, _ := json.Marshal(data)
-		return &protos.LResult{Ok: true, Code: "0", Msg: "", Data: string(jsonB)}
+		return &protos.LResult{Api: api, Ok: true, Code: "0", Msg: "", Data: string(jsonB)}
 	}
 }
 
-func OfResultFail(code string, msg string) *protos.LResult {
-	return &protos.LResult{Ok: false, Code: code, Msg: msg}
+func OfResultFail(api string, code string, msg string) *protos.LResult {
+	return &protos.LResult{Api: api, Ok: false, Code: code, Msg: msg}
 }

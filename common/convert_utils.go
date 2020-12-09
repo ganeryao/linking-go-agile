@@ -90,6 +90,7 @@ func ConvertResult(result *protos.LResult) string {
 
 func convertJsonResult(result *protos.LResult) LResult {
 	var sResult LResult
+	sResult.Api = result.Api
 	sResult.Ok = result.Ok
 	sResult.Code = result.Code
 	sResult.Msg = result.Msg
