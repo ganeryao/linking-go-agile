@@ -17,3 +17,8 @@ message LResult {
   string msg = 3;
   string data = 4;
 }
+
+message LMsg {
+  string api = 1;
+  string msg = 2;
+}
