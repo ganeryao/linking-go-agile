@@ -13,8 +13,14 @@ type LResult struct {
 	Data interface{} `json:"data,omitempty"`
 }
 
+var ResultOk = &protos.LResult{Ok: true, Code: "0", Msg: ""}
+
 func TestFail(lResult *protos.LResult) bool {
 	return !lResult.Ok
+}
+
+func OfResultOk(api string) *protos.LResult {
+	return &protos.LResult{Api: api, Ok: true, Code: "0", Msg: ""}
 }
 
 func OfResultData(api string, data interface{}) *protos.LResult {
