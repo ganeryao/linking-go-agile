@@ -31,7 +31,9 @@ func getConn(db string) redigo.Conn {
 }
 
 func releaseConn(conn redigo.Conn) {
-	conn.Close()
+	if conn != nil {
+		conn.Close()
+	}
 }
 
 func initRedis(redisConfig RConfig) {
