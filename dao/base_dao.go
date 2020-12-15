@@ -7,7 +7,7 @@
 package dao
 
 import (
-	"github.com/ganeryao/linking-go-agile/common"
+	strings2 "github.com/ganeryao/linking-go-agile/strs"
 	"reflect"
 	"strings"
 )
@@ -15,8 +15,8 @@ import (
 type BaseDao struct {
 }
 
-func marshalField(result *common.StringBuilder, fList *common.StringBuilder,
-	vList *common.StringBuilder, obj interface{}, args []interface{}) []interface{} {
+func marshalField(result *strings2.StringBuilder, fList *strings2.StringBuilder,
+	vList *strings2.StringBuilder, obj interface{}, args []interface{}) []interface{} {
 	objType := reflect.TypeOf(obj)
 	var types reflect.Type
 	var values reflect.Value
@@ -73,12 +73,12 @@ fieldFor:
 }
 
 func (dao *BaseDao) MarshalUpSql(v interface{}, table string) (string, []interface{}) {
-	result := common.NewStringBuilder()
+	result := strings2.NewStringBuilder()
 	result.Append("INSERT INTO ")
 	result.Append(table)
 	result.Append("(")
-	fields := common.NewStringBuilder()
-	values := common.NewStringBuilder()
+	fields := strings2.NewStringBuilder()
+	values := strings2.NewStringBuilder()
 	var args []interface{}
 	args = marshalField(result, fields, values, v, args)
 	result.Append(") VALUES(")
@@ -90,10 +90,10 @@ func (dao *BaseDao) MarshalUpSql(v interface{}, table string) (string, []interfa
 }
 
 func (dao *BaseDao) MarshalFieldSql(v interface{}, table string) (string, []interface{}) {
-	result := common.NewStringBuilder()
+	result := strings2.NewStringBuilder()
 	result.Append("select ")
-	fields := common.NewStringBuilder()
-	values := common.NewStringBuilder()
+	fields := strings2.NewStringBuilder()
+	values := strings2.NewStringBuilder()
 	var args []interface{}
 	args = marshalField(result, fields, values, v, args)
 	result.Append(" from ")
@@ -103,10 +103,10 @@ func (dao *BaseDao) MarshalFieldSql(v interface{}, table string) (string, []inte
 }
 
 func (dao *BaseDao) MarshalSelectByPrimarySql(v interface{}, table string) (string, []interface{}) {
-	result := common.NewStringBuilder()
+	result := strings2.NewStringBuilder()
 	result.Append("select ")
-	fields := common.NewStringBuilder()
-	values := common.NewStringBuilder()
+	fields := strings2.NewStringBuilder()
+	values := strings2.NewStringBuilder()
 	var args []interface{}
 	args = marshalField(result, fields, values, v, args)
 	result.Append(" from ")

@@ -7,7 +7,7 @@
 package redis
 
 import (
-	"github.com/ganeryao/linking-go-agile/common"
+	"github.com/ganeryao/linking-go-agile/strs"
 )
 
 func Init(redisConfig RConfig) {
@@ -43,7 +43,7 @@ func RGet(db string, key string) string {
 	if rev == nil {
 		return ""
 	} else {
-		return common.Byte2Str(rev)
+		return strs.ByteToStr(rev)
 	}
 }
 
@@ -96,7 +96,7 @@ func RHGet(db string, key string, field string) string {
 	if rev == nil {
 		return ""
 	} else {
-		return common.Byte2Str(rev)
+		return strs.ByteToStr(rev)
 	}
 }
 
@@ -124,8 +124,8 @@ func RHGetAll(db string, key string) map[string]string {
 		temp := rev.([]interface{})
 		num := len(temp)
 		for i := 0; i < num; i += 2 {
-			k := common.Byte2Str(temp[i])
-			v := common.Byte2Str(temp[i+1])
+			k := strs.ByteToStr(temp[i])
+			v := strs.ByteToStr(temp[i+1])
 			value[k] = v
 		}
 		return value
@@ -164,7 +164,7 @@ func RHMGet(db string, key string, field ...string) []string {
 	} else {
 		temp := rev.([]interface{})
 		for i := range temp {
-			value = append(value, common.Byte2Str(temp[i]))
+			value = append(value, strs.ByteToStr(temp[i]))
 		}
 		return value
 	}
@@ -191,7 +191,7 @@ func RHValues(db string, key string) []string {
 	} else {
 		temp := rev.([]interface{})
 		for i := range temp {
-			value = append(value, common.Byte2Str(temp[i]))
+			value = append(value, strs.ByteToStr(temp[i]))
 		}
 		return value
 	}
@@ -215,7 +215,7 @@ func RLLPop(db string, key string) string {
 	if rev == nil {
 		return ""
 	} else {
-		return common.Byte2Str(rev)
+		return strs.ByteToStr(rev)
 	}
 }
 
@@ -237,7 +237,7 @@ func RLRPop(db string, key string) string {
 	if rev == nil {
 		return ""
 	} else {
-		return common.Byte2Str(rev)
+		return strs.ByteToStr(rev)
 	}
 }
 
@@ -300,7 +300,7 @@ func RSMembers(db string, key string) []string {
 			scan = value[0].(int64)
 			list := value[1].([]interface{})
 			for i := range list {
-				args = append(args, common.Byte2Str(list[i]))
+				args = append(args, strs.ByteToStr(list[i]))
 			}
 		}
 		if scan == 0 {
@@ -364,13 +364,13 @@ func RZRange(db string, key string, start int, end int, withScore bool, isRev bo
 		num := len(temp)
 		if withScore {
 			for i := 0; i < num; i += 2 {
-				k := common.Byte2Str(temp[i])
-				v := common.Byte2Str(temp[i+1])
+				k := strs.ByteToStr(temp[i])
+				v := strs.ByteToStr(temp[i+1])
 				value = append(value, []string{k, v})
 			}
 		} else {
 			for i := 0; i < num; i++ {
-				v := common.Byte2Str(temp[i])
+				v := strs.ByteToStr(temp[i])
 				value = append(value, []string{v})
 			}
 		}
@@ -407,13 +407,13 @@ func RZRangeByScoreLimit(db string, key string, min float64, max float64, withSc
 		num := len(temp)
 		if withScore {
 			for i := 0; i < num; i += 2 {
-				k := common.Byte2Str(temp[i])
-				v := common.Byte2Str(temp[i+1])
+				k := strs.ByteToStr(temp[i])
+				v := strs.ByteToStr(temp[i+1])
 				value = append(value, []string{k, v})
 			}
 		} else {
 			for i := 0; i < num; i += 2 {
-				v := common.Byte2Str(temp[i])
+				v := strs.ByteToStr(temp[i])
 				value = append(value, []string{v})
 			}
 		}

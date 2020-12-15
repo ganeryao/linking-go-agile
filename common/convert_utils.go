@@ -6,6 +6,7 @@ import (
 	"github.com/ganeryao/linking-go-agile/protos"
 	"github.com/ganeryao/linking-go-agile/serialize"
 	lkJson "github.com/ganeryao/linking-go-agile/serialize/json"
+	"github.com/ganeryao/linking-go-agile/strs"
 	"github.com/golang/protobuf/proto"
 )
 
@@ -41,7 +42,7 @@ func ConvertJson(data interface{}) string {
 func ParseJson(str string, data interface{}) interface{} {
 	err := json.Unmarshal([]byte(str), data)
 	if err != nil {
-		panic(`ParseJson: str(` + str + `): ` + err.Error())
+		panic(`ParseJson: strs(` + str + `): ` + err.Error())
 	}
 	return data
 }
@@ -59,11 +60,11 @@ func ConvertRequest(param string, m proto.Message) {
 		panic(`ConvertRequest type error: type(` + serializerName + `): `)
 	}
 	if err != nil {
-		panic(`ConvertRequest Decode: str(` + param + `): ` + err.Error())
+		panic(`ConvertRequest Decode: strs(` + param + `): ` + err.Error())
 	}
 	err = convert.serializer.Unmarshal(b, m)
 	if err != nil {
-		panic(`ConvertRequest Unmarshal error: str(` + param + `): ` + err.Error())
+		panic(`ConvertRequest Unmarshal error: strs(` + param + `): ` + err.Error())
 	}
 }
 
@@ -96,7 +97,7 @@ func convertJsonResult(result *protos.LResult) LResult {
 	sResult.Msg = result.Msg
 	var data = result.GetData()
 	var obj interface{}
-	if !IsEmpty(data) {
+	if !strs.IsEmpty(data) {
 		var b = []byte(data)
 		if json.Valid(b) {
 			if err := json.Unmarshal(b, &obj); err == nil {

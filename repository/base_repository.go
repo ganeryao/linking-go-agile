@@ -10,15 +10,16 @@ import (
 	"github.com/ganeryao/linking-go-agile/common"
 	"github.com/ganeryao/linking-go-agile/mysql"
 	"github.com/ganeryao/linking-go-agile/redis"
+	"github.com/ganeryao/linking-go-agile/strs"
 )
 
 type BaseRepository struct {
 }
 
 func GetAlways(db string, table string, dest interface{}, sql string, id int64) interface{} {
-	var key = "cache:" + table + ":" + common.Int64ToStr(id)
+	var key = "cache:" + table + ":" + strs.Int64ToStr(id)
 	var str = redis.RGet(db, key)
-	if common.IsEmpty(str) {
+	if strs.IsEmpty(str) {
 		mysql.MFindOne(db, dest, sql, id)
 		redis.RSet(db, key, common.ConvertJson(dest))
 	} else {
