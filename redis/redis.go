@@ -26,7 +26,7 @@ func RExists(db string, key string) bool {
 	conn := getConn(db)
 	defer releaseConn(conn)
 	rev, _ := conn.Do("exists", key)
-	return rev.(int) == 1
+	return rev.(int64) == 1
 }
 
 func RExpire(db string, key string, time int) {
@@ -63,7 +63,7 @@ func RSetNX(db string, key string, value string) bool {
 	conn := getConn(db)
 	defer releaseConn(conn)
 	rev, _ := conn.Do("SETNX", key, value)
-	return rev.(int) == 1
+	return rev.(int64) == 1
 }
 
 func RIncr(db string, key string) {
@@ -86,7 +86,7 @@ func RHExists(db string, key string, field string) bool {
 	conn := getConn(db)
 	defer releaseConn(conn)
 	rev, _ := conn.Do("HEXISTS", key, field)
-	return rev.(int) == 1
+	return rev.(int64) == 1
 }
 
 func RHGet(db string, key string, field string) string {
@@ -110,7 +110,7 @@ func RHSetNX(db string, key string, field string, value string) bool {
 	conn := getConn(db)
 	defer releaseConn(conn)
 	rev, _ := conn.Do("HSETNX", key, field, value)
-	return rev.(int) == 1
+	return rev.(int64) == 1
 }
 
 func RHGetAll(db string, key string) interface{} {
@@ -136,14 +136,14 @@ func RHIncrBy(db string, key string, field string, num int) {
 	conn.Do("HINCRBY", key, field, num)
 }
 
-func RHLen(db string, key string) int {
+func RHLen(db string, key string) int64 {
 	conn := getConn(db)
 	defer releaseConn(conn)
 	rev, _ := conn.Do("HLEN", key)
 	if rev == nil {
 		return 0
 	} else {
-		return rev.(int)
+		return rev.(int64)
 	}
 }
 
@@ -195,14 +195,14 @@ func RHValues(db string, key string) interface{} {
 	}
 }
 
-func RLLen(db string, key string) int {
+func RLLen(db string, key string) int64 {
 	conn := getConn(db)
 	defer releaseConn(conn)
 	rev, _ := conn.Do("LLEN", key)
 	if rev == nil {
 		return 0
 	} else {
-		return rev.(int)
+		return rev.(int64)
 	}
 }
 
@@ -261,14 +261,14 @@ func RSAdd(db string, key string, value ...string) {
 	conn.Do("SADD", args...)
 }
 
-func RSCard(db string, key string) int {
+func RSCard(db string, key string) int64 {
 	conn := getConn(db)
 	defer releaseConn(conn)
 	rev, _ := conn.Do("SCARD", key)
 	if rev == nil {
 		return 0
 	} else {
-		return rev.(int)
+		return rev.(int64)
 	}
 }
 
@@ -324,14 +324,14 @@ func RZAdds(db string, key string, arg ...interface{}) {
 	conn.Do("ZADD", args...)
 }
 
-func RZCard(db string, key string) int {
+func RZCard(db string, key string) int64 {
 	conn := getConn(db)
 	defer releaseConn(conn)
 	rev, _ := conn.Do("SCARD", key)
 	if rev == nil {
 		return 0
 	} else {
-		return rev.(int)
+		return rev.(int64)
 	}
 }
 
