@@ -7,7 +7,7 @@
 package redis
 
 import (
-	"strconv"
+	"github.com/ganeryao/linking-go-agile/common"
 )
 
 func Init(redisConfig RConfig) {
@@ -43,7 +43,7 @@ func RGet(db string, key string) string {
 	if rev == nil {
 		return ""
 	} else {
-		return string(rev.([]byte))
+		return common.Byte2Str(rev)
 	}
 }
 
@@ -96,11 +96,11 @@ func RHGet(db string, key string, field string) string {
 	if rev == nil {
 		return ""
 	} else {
-		return string(rev.([]byte))
+		return common.Byte2Str(rev)
 	}
 }
 
-func RHSet(db string, key string, field string, value interface{}) {
+func RHSet(db string, key string, field string, value string) {
 	conn := getConn(db)
 	defer releaseConn(conn)
 	conn.Do("HSET", key, field, value)
@@ -113,18 +113,20 @@ func RHSetNX(db string, key string, field string, value string) bool {
 	return rev.(int64) == 1
 }
 
-func RHGetAll(db string, key string) interface{} {
-	value := make(map[string]interface{})
+func RHGetAll(db string, key string) map[string]string {
+	value := make(map[string]string)
 	conn := getConn(db)
 	defer releaseConn(conn)
 	rev, _ := conn.Do("HGETALL", key)
 	if rev == nil {
-		return nil
+		return value
 	} else {
 		temp := rev.([]interface{})
 		num := len(temp)
 		for i := 0; i < num; i += 2 {
-			value[temp[i].(string)] = temp[i+1].(interface{})
+			k := common.Byte2Str(temp[i])
+			v := common.Byte2Str(temp[i+1])
+			value[k] = v
 		}
 		return value
 	}
@@ -147,13 +149,13 @@ func RHLen(db string, key string) int64 {
 	}
 }
 
-func RHMGet(db string, key string, field ...string) interface{} {
+func RHMGet(db string, key string, field ...string) []string {
 	var args = make([]interface{}, 0)
 	args = append(args, key)
 	for i := range field {
 		args = append(args, field[i])
 	}
-	value := make([]interface{}, 0)
+	value := make([]string, 0)
 	conn := getConn(db)
 	defer releaseConn(conn)
 	rev, _ := conn.Do("HMGET", args...)
@@ -162,7 +164,7 @@ func RHMGet(db string, key string, field ...string) interface{} {
 	} else {
 		temp := rev.([]interface{})
 		for i := range temp {
-			value = append(value, temp[i].(interface{}))
+			value = append(value, common.Byte2Str(temp[i]))
 		}
 		return value
 	}
@@ -179,8 +181,8 @@ func RHMSet(db string, key string, fieldValue ...string) {
 	conn.Do("HMSET", args...)
 }
 
-func RHValues(db string, key string) interface{} {
-	value := make([]interface{}, 0)
+func RHValues(db string, key string) []string {
+	value := make([]string, 0)
 	conn := getConn(db)
 	defer releaseConn(conn)
 	rev, _ := conn.Do("HVALS", key)
@@ -189,7 +191,7 @@ func RHValues(db string, key string) interface{} {
 	} else {
 		temp := rev.([]interface{})
 		for i := range temp {
-			value = append(value, temp[i].(interface{}))
+			value = append(value, common.Byte2Str(temp[i]))
 		}
 		return value
 	}
@@ -213,7 +215,7 @@ func RLLPop(db string, key string) string {
 	if rev == nil {
 		return ""
 	} else {
-		return string(rev.([]byte))
+		return common.Byte2Str(rev)
 	}
 }
 
@@ -235,7 +237,7 @@ func RLRPop(db string, key string) string {
 	if rev == nil {
 		return ""
 	} else {
-		return string(rev.([]byte))
+		return common.Byte2Str(rev)
 	}
 }
 
@@ -283,9 +285,10 @@ func RSRem(db string, key string, value ...string) {
 	conn.Do("SREM", args...)
 }
 
-func RSMembers(db string, key string) interface{} {
-	var args = make([]interface{}, 0)
-	var scan = 0
+func RSMembers(db string, key string) []string {
+	var args = make([]string, 0)
+	var scan int64
+	scan = 0
 	conn := getConn(db)
 	defer releaseConn(conn)
 	for true {
@@ -294,10 +297,10 @@ func RSMembers(db string, key string) interface{} {
 			return nil
 		} else {
 			value := rev.([]interface{})
-			scan = value[0].(int)
+			scan = value[0].(int64)
 			list := value[1].([]interface{})
 			for i := range list {
-				args = append(args, list[i])
+				args = append(args, common.Byte2Str(list[i]))
 			}
 		}
 		if scan == 0 {
@@ -341,7 +344,8 @@ func RZIncrBy(db string, key string, member string, score float64) {
 	conn.Do("ZINCRBY", key, score, member)
 }
 
-func RZRange(db string, key string, start int, end int, withScore bool, isRev bool) interface{} {
+func RZRange(db string, key string, start int, end int, withScore bool, isRev bool) [][]string {
+	value := make([][]string, 0)
 	withScoreStr := ""
 	if withScore {
 		withScoreStr = "WITHSCORES"
@@ -356,7 +360,21 @@ func RZRange(db string, key string, start int, end int, withScore bool, isRev bo
 	if rev == nil {
 		return nil
 	} else {
-		return rev
+		temp := rev.([]interface{})
+		num := len(temp)
+		if withScore {
+			for i := 0; i < num; i += 2 {
+				k := common.Byte2Str(temp[i])
+				v := common.Byte2Str(temp[i+1])
+				value = append(value, []string{k, v})
+			}
+		} else {
+			for i := 0; i < num; i++ {
+				v := common.Byte2Str(temp[i])
+				value = append(value, []string{v})
+			}
+		}
+		return value
 	}
 }
 
@@ -364,7 +382,8 @@ func RZRangeByScore(db string, key string, min float64, max float64, withScore b
 	return RZRangeByScoreLimit(db, key, min, max, withScore, isRev, -1, -1)
 }
 
-func RZRangeByScoreLimit(db string, key string, min float64, max float64, withScore bool, isRev bool, offset int, count int) interface{} {
+func RZRangeByScoreLimit(db string, key string, min float64, max float64, withScore bool, isRev bool, offset int, count int) [][]string {
+	value := make([][]string, 0)
 	withScoreStr := ""
 	if withScore {
 		withScoreStr = "WITHSCORES"
@@ -384,11 +403,25 @@ func RZRangeByScoreLimit(db string, key string, min float64, max float64, withSc
 	if rev == nil {
 		return nil
 	} else {
-		return rev
+		temp := rev.([]interface{})
+		num := len(temp)
+		if withScore {
+			for i := 0; i < num; i += 2 {
+				k := common.Byte2Str(temp[i])
+				v := common.Byte2Str(temp[i+1])
+				value = append(value, []string{k, v})
+			}
+		} else {
+			for i := 0; i < num; i += 2 {
+				v := common.Byte2Str(temp[i])
+				value = append(value, []string{v})
+			}
+		}
+		return value
 	}
 }
 
-func RZRank(db string, key string, member string, isRev bool) int {
+func RZRank(db string, key string, member string, isRev bool) int64 {
 	conn := getConn(db)
 	defer releaseConn(conn)
 	command := "ZRANK"
@@ -399,11 +432,7 @@ func RZRank(db string, key string, member string, isRev bool) int {
 	if rev == nil {
 		return 0
 	} else {
-		val, err := strconv.Atoi(string(rev.([]byte)))
-		if err != nil {
-			return 0
-		}
-		return val
+		return rev.(int64)
 	}
 }
 
@@ -415,7 +444,7 @@ func RZRem(db string, key string, member ...string) {
 	}
 	conn := getConn(db)
 	defer releaseConn(conn)
-	conn.Do("ZREM", args)
+	conn.Do("ZREM", args...)
 }
 
 func RZScore(db string, key string, member string) float64 {
@@ -425,10 +454,6 @@ func RZScore(db string, key string, member string) float64 {
 	if rev == nil {
 		return 0
 	} else {
-		val, err := strconv.ParseFloat(string(rev.([]byte)), 64)
-		if err != nil {
-			return 0
-		}
-		return val
+		return rev.(float64)
 	}
 }

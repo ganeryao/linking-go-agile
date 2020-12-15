@@ -2,73 +2,48 @@ package common
 
 import (
 	"strconv"
-	"strings"
 )
 
-type StringBuilder struct {
-	buffer strings.Builder
+func Int2Str(value int) string {
+	return strconv.Itoa(value)
 }
 
-func IsEmpty(str string) bool {
-	return len(str) == 0
+func Str2Init(value string) int {
+	v, _ := strconv.Atoi(value)
+	return v
 }
 
-func Int64ToStr(num int64) string {
-	return strconv.FormatInt(num, 10)
+func Int642Str(value int64) string {
+	return strconv.FormatInt(value, 10)
 }
 
-func StrToInt64(str string) int64 {
-	i, _ := strconv.ParseInt(str, 0, 64)
-	return i
+func Str2Int64(value string) int64 {
+	v, _ := strconv.ParseInt(value, 10, 64)
+	return v
 }
 
-func NewStringBuilder() *StringBuilder {
-	var builder StringBuilder
-	return &builder
+func Float2Str(value float64) string {
+	return strconv.FormatFloat(value, 'E', -1, 64)
 }
 
-func NewStringBuilderString(str string) *StringBuilder {
-	var builder StringBuilder
-	builder.buffer.WriteString(str)
-	return &builder
+func Str2Float(value string) float64 {
+	v, _ := strconv.ParseFloat(value, 64)
+	return v
 }
 
-func (builder *StringBuilder) Append(s string) *StringBuilder {
-	builder.buffer.WriteString(s)
-	return builder
+func Bool2Str(value bool) string {
+	return strconv.FormatBool(value)
 }
 
-func (builder *StringBuilder) AppendStrings(ss ...string) *StringBuilder {
-	for i := range ss {
-		builder.buffer.WriteString(ss[i])
-	}
-	return builder
+func Str2Bool(value string) bool {
+	v, _ := strconv.ParseBool(value)
+	return v
 }
 
-func (builder *StringBuilder) AppendInt(i int) *StringBuilder {
-	builder.buffer.WriteString(strconv.Itoa(i))
-	return builder
+func Interface2Str(value interface{}) string {
+	return value.(string)
 }
 
-func (builder *StringBuilder) AppendInt64(i int64) *StringBuilder {
-	builder.buffer.WriteString(strconv.FormatInt(i, 10))
-	return builder
-}
-
-func (builder *StringBuilder) AppendFloat64(f float64) *StringBuilder {
-	builder.buffer.WriteString(strconv.FormatFloat(f, 'f', -1, 32))
-	return builder
-}
-
-func (builder *StringBuilder) Clear() *StringBuilder {
-	builder.Clear()
-	return builder
-}
-
-func (builder *StringBuilder) ToString() string {
-	return builder.buffer.String()
-}
-
-func (builder *StringBuilder) IsEmpty() bool {
-	return builder.buffer.Len() == 0
+func Byte2Str(value interface{}) string {
+	return string(value.([]byte))
 }
