@@ -271,14 +271,27 @@ func RSRem(db string, key string, value ...string) {
 }
 
 func RSMembers(db string, key string) interface{} {
+	var args = make([]interface{}, 0)
+	var scan = 0
 	conn := getConn(db)
 	defer releaseConn(conn)
-	rev, _ := conn.Do("SMEMBERS", key)
-	if rev == nil {
-		return nil
-	} else {
-		return rev
+	for true {
+		rev, _ := conn.Do("SSCAN", key, 0)
+		if rev == nil {
+			return nil
+		} else {
+			value := rev.([]interface{})
+			scan = value[0].(int)
+			list := value[1].([]interface{})
+			for i := range list {
+				args = append(args, list[i])
+			}
+		}
+		if scan == 0 {
+			break
+		}
 	}
+	return args
 }
 
 func RZAdd(db string, key string, member string, score float64) {
