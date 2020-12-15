@@ -6,7 +6,9 @@
  */
 package redis
 
-import "strconv"
+import (
+	"strconv"
+)
 
 func Init(redisConfig RConfig) {
 	initRedis(redisConfig)
@@ -24,7 +26,7 @@ func RExists(db string, key string) bool {
 	conn := getConn(db)
 	defer releaseConn(conn)
 	rev, _ := conn.Do("exists", key)
-	return string(rev.([]byte)) == "1"
+	return rev.(int) == 1
 }
 
 func RExpire(db string, key string, time int) {
@@ -51,11 +53,17 @@ func RSet(db string, key string, value string) {
 	conn.Do("set", key, value)
 }
 
+func RSetEX(db string, key string, value string, expire int) {
+	conn := getConn(db)
+	defer releaseConn(conn)
+	conn.Do("SETEX", key, value, expire)
+}
+
 func RSetNX(db string, key string, value string) bool {
 	conn := getConn(db)
 	defer releaseConn(conn)
 	rev, _ := conn.Do("SETNX", key, value)
-	return string(rev.([]byte)) == "1"
+	return rev.(int) == 1
 }
 
 func RIncr(db string, key string) {
@@ -74,10 +82,11 @@ func RHDel(db string, key string, field string) {
 	conn.Do("HDEL", key, field)
 }
 
-func RHExists(db string, key string, field string) {
+func RHExists(db string, key string, field string) bool {
 	conn := getConn(db)
 	defer releaseConn(conn)
-	conn.Do("HEXISTS", key, field)
+	rev, _ := conn.Do("HEXISTS", key, field)
+	return rev.(int) == 1
 }
 
 func RHGet(db string, key string, field string) string {
@@ -101,17 +110,23 @@ func RHSetNX(db string, key string, field string, value string) bool {
 	conn := getConn(db)
 	defer releaseConn(conn)
 	rev, _ := conn.Do("HSETNX", key, field, value)
-	return string(rev.([]byte)) == "1"
+	return rev.(int) == 1
 }
 
 func RHGetAll(db string, key string) interface{} {
+	value := make(map[string]interface{})
 	conn := getConn(db)
 	defer releaseConn(conn)
 	rev, _ := conn.Do("HGETALL", key)
 	if rev == nil {
 		return nil
 	} else {
-		return rev
+		temp := rev.([]interface{})
+		num := len(temp)
+		for i := 0; i < num; i += 2 {
+			value[temp[i].(string)] = temp[i+1].(interface{})
+		}
+		return value
 	}
 }
 
@@ -128,11 +143,7 @@ func RHLen(db string, key string) int {
 	if rev == nil {
 		return 0
 	} else {
-		val, err := strconv.Atoi(string(rev.([]byte)))
-		if err != nil {
-			return 0
-		}
-		return val
+		return rev.(int)
 	}
 }
 
@@ -142,13 +153,18 @@ func RHMGet(db string, key string, field ...string) interface{} {
 	for i := range field {
 		args = append(args, field[i])
 	}
+	value := make([]interface{}, 0)
 	conn := getConn(db)
 	defer releaseConn(conn)
 	rev, _ := conn.Do("HMGET", args...)
 	if rev == nil {
 		return nil
 	} else {
-		return rev
+		temp := rev.([]interface{})
+		for i := range temp {
+			value = append(value, temp[i].(interface{}))
+		}
+		return value
 	}
 }
 
@@ -164,13 +180,18 @@ func RHMSet(db string, key string, fieldValue ...string) {
 }
 
 func RHValues(db string, key string) interface{} {
+	value := make([]interface{}, 0)
 	conn := getConn(db)
 	defer releaseConn(conn)
 	rev, _ := conn.Do("HVALS", key)
 	if rev == nil {
 		return nil
 	} else {
-		return rev
+		temp := rev.([]interface{})
+		for i := range temp {
+			value = append(value, temp[i].(interface{}))
+		}
+		return value
 	}
 }
 
@@ -181,11 +202,7 @@ func RLLen(db string, key string) int {
 	if rev == nil {
 		return 0
 	} else {
-		val, err := strconv.Atoi(string(rev.([]byte)))
-		if err != nil {
-			return 0
-		}
-		return val
+		return rev.(int)
 	}
 }
 
@@ -208,7 +225,7 @@ func RLLPush(db string, key string, value ...string) {
 	}
 	conn := getConn(db)
 	defer releaseConn(conn)
-	conn.Do("LPUSH", args)
+	conn.Do("LPUSH", args...)
 }
 
 func RLRPop(db string, key string) string {
@@ -230,7 +247,7 @@ func RLRPush(db string, key string, value ...string) {
 	}
 	conn := getConn(db)
 	defer releaseConn(conn)
-	conn.Do("RPUSH", args)
+	conn.Do("RPUSH", args...)
 }
 
 func RSAdd(db string, key string, value ...string) {
@@ -241,7 +258,7 @@ func RSAdd(db string, key string, value ...string) {
 	}
 	conn := getConn(db)
 	defer releaseConn(conn)
-	conn.Do("SADD", args)
+	conn.Do("SADD", args...)
 }
 
 func RSCard(db string, key string) int {
@@ -251,11 +268,7 @@ func RSCard(db string, key string) int {
 	if rev == nil {
 		return 0
 	} else {
-		val, err := strconv.Atoi(string(rev.([]byte)))
-		if err != nil {
-			return 0
-		}
-		return val
+		return rev.(int)
 	}
 }
 
@@ -267,7 +280,7 @@ func RSRem(db string, key string, value ...string) {
 	}
 	conn := getConn(db)
 	defer releaseConn(conn)
-	conn.Do("SREM", args)
+	conn.Do("SREM", args...)
 }
 
 func RSMembers(db string, key string) interface{} {
@@ -276,7 +289,7 @@ func RSMembers(db string, key string) interface{} {
 	conn := getConn(db)
 	defer releaseConn(conn)
 	for true {
-		rev, _ := conn.Do("SSCAN", key, 0)
+		rev, _ := conn.Do("SSCAN", key, scan)
 		if rev == nil {
 			return nil
 		} else {
@@ -318,11 +331,7 @@ func RZCard(db string, key string) int {
 	if rev == nil {
 		return 0
 	} else {
-		val, err := strconv.Atoi(string(rev.([]byte)))
-		if err != nil {
-			return 0
-		}
-		return val
+		return rev.(int)
 	}
 }
 
