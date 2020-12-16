@@ -373,8 +373,8 @@ func RZRange(db string, key string, start int, end int, withScore bool, isRev bo
 		if withScore {
 			for i := 0; i < num; i += 2 {
 				k := strs.ByteToStr(temp[i])
-				v := strs.ByteToStr(temp[i+1])
-				value = append(value, []string{k, v})
+				v := strs.ByteToFloat64(temp[i+1].([]byte))
+				value = append(value, []string{k, strs.FloatToStr(v)})
 			}
 		} else {
 			for i := 0; i < num; i++ {
@@ -420,8 +420,8 @@ func RZRangeByScoreLimit(db string, key string, min float64, max float64, withSc
 		if withScore {
 			for i := 0; i < num; i += 2 {
 				k := strs.ByteToStr(temp[i])
-				v := strs.ByteToStr(temp[i+1])
-				value = append(value, []string{k, v})
+				v := strs.ByteToFloat64(temp[i+1].([]byte))
+				value = append(value, []string{k, strs.FloatToStr(v)})
 			}
 		} else {
 			for i := 0; i < num; i += 2 {
