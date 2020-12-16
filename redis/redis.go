@@ -424,7 +424,7 @@ func RZRangeByScoreLimit(db string, key string, min float64, max float64, withSc
 				value = append(value, []string{k, v})
 			}
 		} else {
-			for i := 0; i < num; i += 2 {
+			for i := 0; i < num; i++ {
 				v := strs.ByteToStr(temp[i])
 				value = append(value, []string{v})
 			}
