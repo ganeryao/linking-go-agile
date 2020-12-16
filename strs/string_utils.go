@@ -1,6 +1,7 @@
 package strs
 
 import (
+	"fmt"
 	"strconv"
 )
 
@@ -27,7 +28,11 @@ func StrToInt64(value string) int64 {
 }
 
 func FloatToStr(value float64) string {
-	return strconv.FormatFloat(value, 'E', -1, 64)
+	return fmt.Sprintf("%.6f", value)
+}
+
+func FloatToStrByScale(value float64, scale string) string {
+	return fmt.Sprintf("%."+scale+"f", value)
 }
 
 func StrToFloat(value string) float64 {
