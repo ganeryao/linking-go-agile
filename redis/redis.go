@@ -33,7 +33,7 @@ func RExpire(db string, key string, time int) {
 	//c.radius 即为 Circle 类型对象中的属性
 	conn := getConn(db)
 	defer releaseConn(conn)
-	conn.Do("exists", key, time)
+	conn.Do("EXPIRE", key, time)
 }
 
 func RGet(db string, key string) string {
@@ -56,7 +56,7 @@ func RSet(db string, key string, value string) {
 func RSetEX(db string, key string, value string, expire int) {
 	conn := getConn(db)
 	defer releaseConn(conn)
-	conn.Do("SETEX", key, value, expire)
+	conn.Do("SETEX", key, expire, value)
 }
 
 func RSetNX(db string, key string, value string) bool {
@@ -297,7 +297,8 @@ func RSMembers(db string, key string) []string {
 			return nil
 		} else {
 			value := rev.([]interface{})
-			scan = value[0].(int64)
+			step := strs.ByteToStr(value[0])
+			scan = strs.StrToInt64(step)
 			list := value[1].([]interface{})
 			for i := range list {
 				args = append(args, strs.ByteToStr(list[i]))
