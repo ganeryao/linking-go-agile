@@ -436,6 +436,9 @@ func RZRangeByScoreLimit(db string, key string, min float64, max float64, withSc
 	}
 }
 
+/**
+0为开始
+*/
 func RZRank(db string, key string, member string, isRev bool) int64 {
 	conn := getConn(db)
 	defer releaseConn(conn)
@@ -469,6 +472,6 @@ func RZScore(db string, key string, member string) float64 {
 	if rev == nil {
 		return 0
 	} else {
-		return rev.(float64)
+		return strs.StrToFloat(strs.ByteToStr(rev))
 	}
 }
