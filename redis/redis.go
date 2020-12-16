@@ -311,12 +311,18 @@ func RSMembers(db string, key string) []string {
 	return args
 }
 
+/**
+redis.RZAdd("default", "test_set", "test1", 1.1)
+*/
 func RZAdd(db string, key string, member string, score float64) {
 	conn := getConn(db)
 	defer releaseConn(conn)
 	conn.Do("ZADD", key, score, member)
 }
 
+/**
+redis.RZAdds("default", "test_set",1.2,  "test2", 1.3, "test3")
+*/
 func RZAdds(db string, key string, arg ...interface{}) {
 	var args = make([]interface{}, 0)
 	args = append(args, key)
@@ -331,7 +337,7 @@ func RZAdds(db string, key string, arg ...interface{}) {
 func RZCard(db string, key string) int64 {
 	conn := getConn(db)
 	defer releaseConn(conn)
-	rev, _ := conn.Do("SCARD", key)
+	rev, _ := conn.Do("ZCARD", key)
 	if rev == nil {
 		return 0
 	} else {
@@ -347,17 +353,18 @@ func RZIncrBy(db string, key string, member string, score float64) {
 
 func RZRange(db string, key string, start int, end int, withScore bool, isRev bool) [][]string {
 	value := make([][]string, 0)
-	withScoreStr := ""
-	if withScore {
-		withScoreStr = "WITHSCORES"
-	}
 	conn := getConn(db)
 	defer releaseConn(conn)
 	command := "ZRANGE"
 	if isRev {
 		command = "ZREVRANGE"
 	}
-	rev, _ := conn.Do(command, key, start, end, withScoreStr)
+	var rev interface{}
+	if withScore {
+		rev, _ = conn.Do(command, key, start, end, "WITHSCORES")
+	} else {
+		rev, _ = conn.Do(command, key, start, end)
+	}
 	if rev == nil {
 		return nil
 	} else {
@@ -385,10 +392,6 @@ func RZRangeByScore(db string, key string, min float64, max float64, withScore b
 
 func RZRangeByScoreLimit(db string, key string, min float64, max float64, withScore bool, isRev bool, offset int, count int) [][]string {
 	value := make([][]string, 0)
-	withScoreStr := ""
-	if withScore {
-		withScoreStr = "WITHSCORES"
-	}
 	conn := getConn(db)
 	defer releaseConn(conn)
 	var rev interface{}
@@ -396,10 +399,18 @@ func RZRangeByScoreLimit(db string, key string, min float64, max float64, withSc
 	if isRev {
 		command = "ZREVRANGEBYSCORE"
 	}
-	if offset > 0 && count > 0 {
-		rev, _ = conn.Do(command, key, min, max, withScoreStr, offset, count)
+	if withScore {
+		if offset > 0 && count > 0 {
+			rev, _ = conn.Do(command, key, min, max, "WITHSCORES", offset, count)
+		} else {
+			rev, _ = conn.Do(command, key, min, max, "WITHSCORES")
+		}
 	} else {
-		rev, _ = conn.Do(command, key, min, max, withScoreStr)
+		if offset > 0 && count > 0 {
+			rev, _ = conn.Do(command, key, min, max, offset, count)
+		} else {
+			rev, _ = conn.Do(command, key, min, max)
+		}
 	}
 	if rev == nil {
 		return nil
