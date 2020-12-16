@@ -397,6 +397,9 @@ func RZRangeByScoreLimit(db string, key string, min float64, max float64, withSc
 	var rev interface{}
 	command := "ZRANGEBYSCORE"
 	if isRev {
+		temp := min
+		max = min
+		min = temp
 		command = "ZREVRANGEBYSCORE"
 	}
 	if withScore {
