@@ -404,13 +404,15 @@ func RZRangeByScoreLimit(db string, key string, min float64, max float64, withSc
 	}
 	if withScore {
 		if offset > 0 && count > 0 {
-			rev, _ = conn.Do(command, key, min, max, "WITHSCORES", offset, count)
+			limit := "LIMIT " + strs.IntToStr(offset) + " " + strs.IntToStr(count)
+			rev, _ = conn.Do(command, key, min, max, "WITHSCORES", limit)
 		} else {
 			rev, _ = conn.Do(command, key, min, max, "WITHSCORES")
 		}
 	} else {
 		if offset > 0 && count > 0 {
-			rev, _ = conn.Do(command, key, min, max, offset, count)
+			limit := "LIMIT " + strs.IntToStr(offset) + " " + strs.IntToStr(count)
+			rev, _ = conn.Do(command, key, min, max, limit)
 		} else {
 			rev, _ = conn.Do(command, key, min, max)
 		}
