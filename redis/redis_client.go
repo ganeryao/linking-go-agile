@@ -16,6 +16,7 @@ type RServerConfig struct {
 	Name     string
 	Ip       string
 	Password string
+	Db       int
 }
 
 var pools map[string]*redigo.Pool
@@ -57,7 +58,7 @@ func initDb(config RServerConfig, maxIdle int, maxActive int, idleTimeout int) *
 		IdleTimeout: time.Duration(idleTimeout) * time.Second,
 
 		Dial: func() (redigo.Conn, error) {
-			c, err := redigo.Dial("tcp", config.Ip)
+			c, err := redigo.Dial("tcp", config.Ip, redigo.DialDatabase(config.Db))
 			if err != nil {
 				panic(`redis initDb: tcp(` + config.Ip + `): ` + err.Error())
 			}
