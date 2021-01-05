@@ -25,6 +25,8 @@ var (
 
 func InitMq(mqConf MqConfig) {
 	client = mqHttpSdk.NewAliyunMQClient(mqConf.Endpoint, mqConf.AccessKey, mqConf.SecretKey, "")
+	producers = make(map[string]mqHttpSdk.MQProducer)
+	consumers = make(map[string]mqHttpSdk.MQConsumer)
 }
 
 func InitProducer(config MqTopicConfig) {
