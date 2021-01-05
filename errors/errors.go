@@ -23,8 +23,9 @@ package errors
 import "errors"
 
 var (
-	ErrWrongValueType  = errors.New("protos: convert on wrong type value")
-	ErrWrongSerializer = errors.New("serializer: name not found")
+	ErrWrongValueType        = errors.New("protos: convert on wrong type value")
+	ErrWrongSerializer       = errors.New("serializer: name not found")
+	ErrWrongRocketmqProducer = errors.New("rocketmq: producer not found")
 )
 
 // ErrUnknownCode is a string code representing an unknown error

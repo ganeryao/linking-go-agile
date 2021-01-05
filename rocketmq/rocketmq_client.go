@@ -42,7 +42,7 @@ func InitConsumer(config MqTopicConfig) {
 }
 
 func GetProducer(name string) mqHttpSdk.MQProducer {
-	if cli, ok := producers[name]; !ok {
+	if cli, ok := producers[name]; ok {
 		return cli
 	} else {
 		return nil
@@ -50,7 +50,7 @@ func GetProducer(name string) mqHttpSdk.MQProducer {
 }
 
 func GetConsumer(name string) mqHttpSdk.MQConsumer {
-	if cli, ok := consumers[name]; !ok {
+	if cli, ok := consumers[name]; ok {
 		return cli
 	} else {
 		return nil
