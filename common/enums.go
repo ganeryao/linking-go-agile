@@ -9,28 +9,28 @@ package common
 type ProtocolType string
 
 const (
-	ProtocolProtobuf ProtocolType = "1"
-	ProtocolJson     ProtocolType = "2"
+	ProtocolProtobuf ProtocolType = "proto"
+	ProtocolJson     ProtocolType = "json"
 )
 
 func (p ProtocolType) ValueOf(value string) ProtocolType {
 	switch value {
-	case "1":
+	case "proto":
 		return ProtocolProtobuf
-	case "2":
+	case "json":
 		return ProtocolJson
 	default:
-		return "0"
+		return "none"
 	}
 }
 
 func (p ProtocolType) String() string {
 	switch p {
 	case ProtocolProtobuf:
-		return "1"
+		return "proto"
 	case ProtocolJson:
-		return "2"
+		return "json"
 	default:
-		return "0"
+		return "none"
 	}
 }
