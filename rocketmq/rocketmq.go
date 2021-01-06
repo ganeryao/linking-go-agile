@@ -58,7 +58,7 @@ func PublishMsg(name string, msg MqMsg) (bool, error) {
 	}
 }
 
-func ConsumeMsg(name string, consumeFunc func(msg MqMsg) (bool, error)) {
+func ConsumeMsg(name string, numOfMessages int32, waitSeconds int64, consumeFunc func(msg MqMsg) (bool, error)) {
 	cli := GetConsumer(name)
 	if cli == nil {
 		log4go.Debug("rocketmq: consumer not found")
@@ -136,8 +136,8 @@ func ConsumeMsg(name string, consumeFunc func(msg MqMsg) (bool, error)) {
 		// 长轮询消费消息
 		// 长轮询表示如果topic没有消息则请求会在服务端挂住3s，3s内如果有消息可以消费则立即返回
 		cli.ConsumeMessage(respChan, errChan,
-			3, // 一次最多消费3条(最多可设置为16条)
-			3, // 长轮询时间3秒（最多可设置为30秒）
+			numOfMessages, // 一次最多消费多少条(最多可设置为16条)
+			waitSeconds,   // 长轮询时间多少秒（最多可设置为30秒）
 		)
 		<-endChan
 	}
