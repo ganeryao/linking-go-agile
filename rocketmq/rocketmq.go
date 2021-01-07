@@ -58,7 +58,7 @@ func PublishMsg(name string, msg MqMsg) (bool, error) {
 	}
 }
 
-func ConsumeMsg(name string, numOfMessages int32, waitSeconds int64, consumeFunc func(msg MqMsg) (bool, error)) {
+func ConsumeMsg(name string, group string, numOfMessages int32, waitSeconds int64, consumeFunc func(group string, msg MqMsg) (bool, error)) {
 	cli := GetConsumer(name)
 	if cli == nil {
 		log4go.Debug("rocketmq: consumer not found")
@@ -88,7 +88,7 @@ func ConsumeMsg(name string, numOfMessages int32, waitSeconds int64, consumeFunc
 						}
 						msg := MqMsg{MessageBody: v.MessageBody, MessageTag: v.MessageTag,
 							MessageKey: v.MessageKey, Properties: v.Properties}
-						_, err := consumeFunc(msg)
+						_, err := consumeFunc(group, msg)
 						if err != nil {
 							_ = log4go.Error("rocketmq ConsumeMsg error=========" + err.Error())
 						} else {
