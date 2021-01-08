@@ -1,6 +1,7 @@
 package rocketmq
 
 import (
+	"fmt"
 	"github.com/alecthomas/log4go"
 	mqHttpSdk "github.com/aliyunmq/mq-http-go-sdk"
 	lkError "github.com/ganeryao/linking-go-agile/errors"
@@ -69,6 +70,11 @@ func ConsumeMsg(name string, numOfMessages int32, waitSeconds int64, consumeFunc
 		respChan := make(chan mqHttpSdk.ConsumeMessageResponse)
 		errChan := make(chan error)
 		go func() {
+			defer func() {
+				if r := recover(); r != nil {
+					fmt.Printf("捕获到的错误：%s\n", r)
+				}
+			}()
 			select {
 			case resp := <-respChan:
 				{
