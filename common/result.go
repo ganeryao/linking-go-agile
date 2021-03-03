@@ -6,32 +6,41 @@ import (
 )
 
 type LResult struct {
-	Api  string      `json:"api,omitempty"`
-	Ok   bool        `json:"ok,omitempty"`
-	Code string      `json:"code,omitempty"`
-	Msg  string      `json:"msg,omitempty"`
-	Data interface{} `json:"data,omitempty"`
+	Api     string      `json:"api,omitempty"`
+	Code    int32       `json:"code,omitempty"`
+	ErrCode string      `json:"err_code,omitempty"`
+	Msg     string      `json:"msg,omitempty"`
+	Data    interface{} `json:"data,omitempty"`
 }
 
-var ResultOk = &protos.LResult{Ok: true, Code: "0", Msg: ""}
+var ResultOk = &protos.LResult{Code: RetOk, ErrCode: CodeOk, Msg: MsgOk}
 
 func TestFail(lResult *protos.LResult) bool {
-	return !lResult.Ok
+	return lResult.Code != RetOk
 }
 
-func OfResultOk(api string) *protos.LResult {
-	return &protos.LResult{Api: api, Ok: true, Code: "0", Msg: ""}
+func OfOk(api string) *protos.LResult {
+	return &protos.LResult{Api: api, Code: RetOk, ErrCode: CodeOk, Msg: MsgOk}
 }
 
-func OfResultData(api string, data interface{}) *protos.LResult {
-	if data == nil {
-		return &protos.LResult{Api: api, Ok: true, Code: "0", Msg: ""}
-	} else {
+func OfOkData(api string, data interface{}) *protos.LResult {
+	result := OfOk(api)
+	if data != nil {
 		jsonB, _ := json.Marshal(data)
-		return &protos.LResult{Api: api, Ok: true, Code: "0", Msg: "", Data: string(jsonB)}
+		result.Data = string(jsonB)
 	}
+	return result
 }
 
-func OfResultFail(api string, code string, msg string) *protos.LResult {
-	return &protos.LResult{Api: api, Ok: false, Code: code, Msg: msg}
+func OfFail(api string, code int32, errCode string, msg string) *protos.LResult {
+	return &protos.LResult{Api: api, Code: code, ErrCode: errCode, Msg: msg}
+}
+
+func OfFailData(api string, code int32, errCode string, msg string, data interface{}) *protos.LResult {
+	result := OfFail(api, code, errCode, msg)
+	if data != nil {
+		jsonB, _ := json.Marshal(data)
+		result.Data = string(jsonB)
+	}
+	return result
 }

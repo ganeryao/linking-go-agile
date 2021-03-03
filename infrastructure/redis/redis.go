@@ -7,7 +7,7 @@
 package redis
 
 import (
-	"github.com/ganeryao/linking-go-agile/strs"
+	"github.com/ganeryao/linking-go-agile/utils/strs"
 )
 
 func Init(redisConfig RConfig) {

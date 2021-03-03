@@ -4,9 +4,9 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"github.com/ganeryao/linking-go-agile/protos"
-	"github.com/ganeryao/linking-go-agile/serialize"
-	lkJson "github.com/ganeryao/linking-go-agile/serialize/json"
-	"github.com/ganeryao/linking-go-agile/strs"
+	"github.com/ganeryao/linking-go-agile/utils/serialize"
+	lkJson "github.com/ganeryao/linking-go-agile/utils/serialize/json"
+	"github.com/ganeryao/linking-go-agile/utils/strs"
 	"github.com/golang/protobuf/proto"
 )
 
@@ -92,8 +92,8 @@ func ConvertResult(result *protos.LResult) string {
 func convertJsonResult(result *protos.LResult) LResult {
 	var sResult LResult
 	sResult.Api = result.Api
-	sResult.Ok = result.Ok
 	sResult.Code = result.Code
+	sResult.ErrCode = result.ErrCode
 	sResult.Msg = result.Msg
 	var data = result.GetData()
 	var obj interface{}

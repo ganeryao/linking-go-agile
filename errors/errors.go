@@ -56,7 +56,6 @@ func NewError(err error, code string, metadata ...map[string]string) *Error {
 		}
 		return lkErr
 	}
-
 	e := &Error{
 		Code:    code,
 		Message: err.Error(),
@@ -77,7 +76,6 @@ func mergeMetadatas(lkErr *Error, metadata map[string]string) {
 		lkErr.Metadata = metadata
 		return
 	}
-
 	for key, value := range metadata {
 		lkErr.Metadata[key] = value
 	}
@@ -90,15 +88,12 @@ func CodeFromError(err error) string {
 	if err == nil {
 		return ""
 	}
-
 	lkErr, ok := err.(*Error)
 	if !ok {
 		return ErrUnknownCode
 	}
-
 	if lkErr == nil {
 		return ""
 	}
-
 	return lkErr.Code
 }
